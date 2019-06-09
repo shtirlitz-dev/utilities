@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-
+    Copyright (c) 2019, Vsevolod Lukyanin
+
     used as Visual Studio tool to check cpp/h/cs files:
     Tools | External Tools... |> Add
     Title: Check Spaces
