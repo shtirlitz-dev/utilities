@@ -1,0 +1,72 @@
+## comment: this line is ignored
+## ignore files ending with .a
+#*.a
+## but track file lib.a, (the previous rule is ignored)
+#!lib.a
+## ignore only TODO from root dir, not other (like subdir/TODO)
+#/TODO
+## ignore all files in folder build/
+#build/
+## ignore doc/notes.txt, but not doc/server/arch.txt
+#doc/*.txt
+## ignore all .txt files in folder doc/
+#doc/**/*.txt
+
+#build-*/
+#*.user
+#*.user.*
+
+# Mac
+.DS_Store
+
+# C++ objects and libs
+
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+*.hi
+
+# Qt-es
+
+object_script.*.Release
+object_script.*.Debug
+*_plugin_import.cpp
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+Makefile*
+*build-*
+
+# Qt unit tests
+target_wrapper.*
+
+# QtCreator
+
+*.autosave
+
+# QtCtreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+# QtCtreator CMake
+CMakeLists.txt.user*
+
+# executable
+*.exe
+
