@@ -4,11 +4,18 @@
 
     used as Visual Studio tool to check cpp/h/cs files:
     Tools | External Tools... |> Add
+    ---
     Title: Check Spaces
     Command: <path to checkspaces.exe>
     Arguments: $(SolutionDir)$(SolutionFileName)
     [x] Use Output Window
-    
+    ---
+    Title: Check Spaces (Project)
+    Command: <path to checkspaces.exe>
+    Arguments: $(ProjectDir)$(ProjectFileName)
+    [x] Use Output Window
+    ---
+
     checks:
     warning SP0001: ends with space or tab
     warning SP0002: begins with space
@@ -41,7 +48,7 @@ main = do
     checkCmdLine slns opts
 
 checkCmdLine ([solution_name]) opts = checkSolution solution_name opts
-checkCmdLine _ _ = putStrLn "usage: checkspaces <solution> [-options]"
+checkCmdLine _ _ = putStrLn "usage: checkspaces <solution_or_project> [-options]"
 
 regexProject :: String
 regexProject = "Project[^,]*, *\"([^\"]*)"  -- regex in haskell have a lot of limitations
@@ -52,16 +59,22 @@ extractProject str = if length ress > 0 then Just $ (head ress) !! 1 else Nothin
     where ress = str =~ regexProject :: [[String]]
 
 
-checkSolution :: String -> [String] -> IO ()
-checkSolution solution_name options = do
+getProjectList :: String -> IO [String]
+getProjectList solution_name  = do
+    putStrLn $ "Checking solution " ++ solution_name ++ "..."
     items <- fmap T.lines $ TIO.readFile solution_name   -- read from file, divide in lines, items id list of Text (module Data.Text.Lazy), i.e.  [T.Text]
     let projs = filter (T.isPrefixOf "Project") items     -- only strings like "Project<bla-bla-bla>"
     let prjfiles = map fromJust $ filter isJust  $ fmap (extractProject . T.unpack) projs -- extract project file names from those strings
     let slndir = takeDirectory solution_name
-    let prjpaths = map (combinePath slndir) prjfiles      -- projects files, full paths
+    return $ map (combinePath slndir) prjfiles      -- projects files, full paths
+    
+checkSolution :: String -> [String] -> IO ()
+checkSolution solution_name options = do
+    -- solution_name can be solution or project. For solution extract projects, else make list of 1 project element
+    prjpaths <- if "sln" `isExtensionOf` solution_name then getProjectList solution_name else return [solution_name]
+    
     allFiles <- mconcat $ map getProjectFiles prjpaths    -- all source files in all projects of solution
     let srcFiles = nub allFiles                           -- unique files
-    putStrLn $ "Checking solution " ++ solution_name ++ "..."
     forM_ (zip [1..] prjpaths) (\(n, s) -> putStrLn $ mconcat [" ", show n, ". Project ", s] )  -- print list of solutions
     putStrLn ""
     -- test source files (file -> statistics)
